@@ -5,7 +5,6 @@
         "plugin:@next/next/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "plugin:@typescript-eslint/recommended",
-        "plugin:baseui/recommended",
         "plugin:import/errors",
         "plugin:import/typescript",
         "plugin:import/warnings",
