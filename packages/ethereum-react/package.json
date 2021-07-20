@@ -1,0 +1,20 @@
+{
+    "name": "@phala/util-ethereum-react",
+    "version": "0.0.1",
+    "dependencies": {
+        "ethers": "^5.4.1",
+        "react": "^17.0.2",
+        "react-is": "^17.0.2",
+        "uuid": "^8.3.2",
+        "web3modal": "^1.9.3"
+    },
+    "devDependencies": {
+        "@types/uuid": "^8.3.1",
+        "typescript": "^4.3.5"
+    },
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc -b"
+    }
+}
