@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "alwaysStrict": true,
+        "declaration": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noUncheckedIndexedAccess": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "target": "esnext"
+        // "paths": {
+        //     "@phala/types": ["./libs/polkadot/interfaces/types.ts"],
+        //     "@polkadot/api/augment": ["./libs/polkadot/interfaces/augment-api.ts"],
+        //     "@polkadot/types/augment": ["./libs/polkadot/interfaces/augment-types.ts"]
+        // },
+    },
+    "exclude": ["node_modules"]
+}
