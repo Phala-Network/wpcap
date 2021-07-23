@@ -1,10 +1,21 @@
-import { ethers } from 'ethers'
-import React, { PropsWithChildren, useContext, useMemo } from 'react'
+import { ethers, Signer } from 'ethers'
+import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { EthersContext, IEthersContext } from '../contexts/EthersContext'
-import { useWeb3 } from './useWeb3'
+import { Readystate, useWeb3 } from './Web3Context'
+
+export interface IEthersContext {
+    instance?: string
+    provider?: Web3Provider
+    readystate: Readystate
+    signer?: Signer
+}
 
 type ExternalProvider = ethers.providers.ExternalProvider
+type Web3Provider = ethers.providers.Web3Provider
+
+const EthersContext = createContext<IEthersContext>({
+    readystate: 'unavailable',
+})
 
 export const EthersProvider = ({ children }: PropsWithChildren<unknown>): JSX.Element => {
     const { provider: externalProvider, readystate } = useWeb3()
