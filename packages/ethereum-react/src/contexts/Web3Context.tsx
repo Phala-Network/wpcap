@@ -3,10 +3,12 @@ import Web3Modal from 'web3modal'
 
 export type Readystate = 'idle' | 'connecting' | 'connected' | 'unavailable'
 
-export interface Provider {
-    readonly _: unique symbol
+export interface RawProvider {
     on?(eventName: 'accountsChanged', handler: (accounts?: string[]) => void): void
     on?(eventName: 'chainChanged', handler: () => void): void
+
+    removeListener?(eventName: 'accountsChanged', handler: (accounts?: string[]) => void): void
+    removeListener?(eventName: 'chainChanged', handler: () => void): void
 }
 
 export interface IWeb3Context {
@@ -15,7 +17,7 @@ export interface IWeb3Context {
      */
     accounts: string[]
 
-    provider?: Provider
+    provider?: RawProvider
     readystate: Readystate
 }
 
@@ -23,53 +25,52 @@ export const Web3Context = createContext<IWeb3Context>({ accounts: [], readystat
 
 export const Web3Provider = ({ children }: PropsWithChildren<unknown>): JSX.Element => {
     const [accounts, setAccounts] = useState<string[]>([])
-    const [provider, setProvider] = useState<Provider>()
+    const [rawProvider, setRawProvider] = useState<RawProvider>()
     const [readystate, setReadystate] = useState<Readystate>('idle')
 
-    const web3Modal = useMemo(
-        () =>
-            typeof window !== 'undefined'
-                ? new Web3Modal({
-                      cacheProvider: true,
-                      providerOptions: {},
-                  })
-                : {
-                      connect: () => {
-                          throw new Error('web3modal is unavailable in SSR')
-                      },
-                  },
-        []
-    )
+    const web3modal = useMemo(() => (typeof window !== 'undefined' ? new Web3Modal() : undefined), [])
 
     useEffect(() => {
         if (readystate !== 'idle') {
             return
         }
 
-        setAccounts([])
+        if (web3modal === undefined) {
+            setReadystate('unavailable')
+            return
+        }
+
         setReadystate('connecting')
-        web3Modal
+        web3modal
             .connect()
-            .then((provider) => {
+            .then((rawProvider) => {
+                setRawProvider(rawProvider)
                 setReadystate('connected')
-                setProvider(provider as Provider)
             })
             .catch(() => {
                 setReadystate('unavailable')
             })
-    }, [readystate, web3Modal])
+    }, [readystate, web3modal])
 
     useEffect(() => {
-        provider?.on?.('accountsChanged', (accounts) => {
+        const handleAccountChanged = (accounts?: string[]) => {
             setAccounts(accounts ?? [])
-        })
-        provider?.on?.('chainChanged', () => {
-            setProvider(undefined)
-            setReadystate('idle')
-        })
-    }, [provider])
+        }
 
-    return <Web3Context.Provider value={{ accounts, provider, readystate }}>{children}</Web3Context.Provider>
+        const handleChainChanged = () => {}
+
+        rawProvider?.on?.('accountsChanged', handleAccountChanged)
+        rawProvider?.on?.('chainChanged', handleChainChanged)
+
+        return () => {
+            rawProvider?.removeListener?.('accountsChanged', handleAccountChanged)
+            rawProvider?.removeListener?.('chainChanged', handleChainChanged)
+        }
+    }, [rawProvider])
+
+    return (
+        <Web3Context.Provider value={{ accounts, provider: rawProvider, readystate }}>{children}</Web3Context.Provider>
+    )
 }
 
 export const useWeb3 = (): IWeb3Context => useContext(Web3Context)
