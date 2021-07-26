@@ -5,7 +5,7 @@ import { useMemo } from 'react'
 import { useQuery, UseQueryResult } from 'react-query'
 import { v4 as uuidv4 } from 'uuid'
 import { useErc20Token } from '../hooks/useErc20Token'
-import { useErc20Decimals } from './useTokenDecimals'
+import { useErc20Decimals } from './useErc20Decimals'
 
 const AccountBalanceQueryKey = uuidv4()
 
@@ -38,19 +38,17 @@ export const useAccountDecimalBalance = (
 ): {
     balance: UseQueryResult<BigNumber>
     decimalBalance?: Decimal
-    decimals: UseQueryResult<number>
 } => {
     const balance = useAccountBalance(account, address)
-    const decimals = useErc20Decimals(address)
+    const { factor } = useErc20Decimals(address)
 
     const decimalBalance = useMemo(() => {
-        if (balance.data === undefined || decimals.data === undefined) {
+        if (balance.data === undefined || factor === undefined) {
             return
         }
 
-        const factor = new Decimal(10).pow(decimals.data)
         return new Decimal(balance.data.toString()).div(factor)
-    }, [balance, decimals])
+    }, [balance.data, factor])
 
-    return { balance, decimalBalance, decimals }
+    return { balance, decimalBalance }
 }
