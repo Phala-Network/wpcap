@@ -1,9 +1,10 @@
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 import { config } from '../../config'
-import { EthereumNetworkConfiguration } from './configuration'
+import { EthereumNetworkConfiguration, SubstrateNetworkConfiguration } from './configuration'
 
 interface IConfigurationContext {
     ethereum?: EthereumNetworkConfiguration
+    substrate?: SubstrateNetworkConfiguration
 }
 
 const ConfigurationContext = createContext<IConfigurationContext>({})
@@ -11,12 +12,17 @@ const ConfigurationContext = createContext<IConfigurationContext>({})
 export const ConfigurationProvider = ({
     children,
     ethereumChainId,
-}: PropsWithChildren<{ ethereumChainId?: number }>): JSX.Element => {
+    substrateNetworkName,
+}: PropsWithChildren<{ ethereumChainId?: number; substrateNetworkName: string }>): JSX.Element => {
     const ethereum = useMemo(() => {
         return ethereumChainId !== undefined ? config.ethereum[ethereumChainId] : undefined
     }, [ethereumChainId])
 
-    return <ConfigurationContext.Provider value={{ ethereum }}>{children}</ConfigurationContext.Provider>
+    const substrate = useMemo(() => {
+        return substrateNetworkName !== undefined ? config.substrate[substrateNetworkName] : undefined
+    }, [substrateNetworkName])
+
+    return <ConfigurationContext.Provider value={{ ethereum, substrate }}>{children}</ConfigurationContext.Provider>
 }
 
 export const useConfiguration = (): IConfigurationContext => useContext(ConfigurationContext)

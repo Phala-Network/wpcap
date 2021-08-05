@@ -1,3 +1,4 @@
+import { khalaDev } from '@phala/typedefs'
 import { Configuration } from './libs/configuration/configuration'
 
 export const config: Configuration = {
@@ -20,6 +21,12 @@ export const config: Configuration = {
             contracts: {
                 erc20: '0x512f7a3c14b6ee86c2015bc8ac1fe97e657f75f2',
             },
+        },
+    },
+    substrate: {
+        'khala-pc-test': {
+            endpoint: 'wss://pc-test.phala.network/khala/ws',
+            typedefs: khalaDev,
         },
     },
 }

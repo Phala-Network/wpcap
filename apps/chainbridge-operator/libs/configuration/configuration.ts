@@ -1,3 +1,5 @@
+import { RegistryTypes } from '@polkadot/types/types'
+
 interface EthereumChainBridgeConfiguration {
     contracts: {
         bridge: string
@@ -25,6 +27,12 @@ export interface EthereumNetworkConfiguration {
     }
 }
 
+export interface SubstrateNetworkConfiguration {
+    endpoint: string
+    typedefs: RegistryTypes
+}
+
 export interface Configuration {
     ethereum: Record<number, EthereumNetworkConfiguration>
+    substrate: Record<string, SubstrateNetworkConfiguration>
 }
