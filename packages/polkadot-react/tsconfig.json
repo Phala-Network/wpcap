@@ -1,0 +1,16 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "declaration": true,
+        "jsx": "react-jsx",
+        "outDir": "./lib",
+        "paths": {
+            "@phala/types": ["./src/interfaces/types.ts"],
+            "@polkadot/api/augment": ["./src/interfaces/augment-api.ts"],
+            "@polkadot/types/augment": ["./src/interfaces/augment-types.ts"]
+        },
+        "rootDir": "./src"
+    },
+    "exclude": ["dist/**/*"],
+    "include": ["src/**/*.ts", "src/**/*.tsx"]
+}

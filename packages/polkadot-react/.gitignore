@@ -1,0 +1,6 @@
+lib
+src/interfaces/*
+src/interfaces/phala/*
+!src/interfaces/definitions.ts
+!src/interfaces/phala
+!src/interfaces/phala/README.md
