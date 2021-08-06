@@ -13,6 +13,6 @@ export function decimalToBalance(value: Decimal, api?: ApiPromise): Balance | un
     return api?.createType('Balance', decimalToBN(value))
 }
 
-export function balanceToDecimal(value: Balance, factor: Decimal): Decimal {
+export function balanceToDecimal(value: Balance | BN, factor: Decimal): Decimal {
     return new Decimal(value.toString()).div(factor)
 }
