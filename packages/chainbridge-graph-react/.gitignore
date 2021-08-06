@@ -1,0 +1,5 @@
+ethereum/interfaces/*
+!ethereum/interfaces/index.ts
+lib
+substrate/interfaces/*
+!substrate/interfaces/index.ts

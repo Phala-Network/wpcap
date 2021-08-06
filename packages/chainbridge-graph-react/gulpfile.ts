@@ -6,9 +6,9 @@ import { resolve } from 'path'
 export const codegen = async () => {
     await generate({
         generates: {
-            './src/interfaces/graph.ts': {
-                documents: resolve(__dirname, 'documents.graphql'),
-                schema: resolve(__dirname, 'schema.graphql'),
+            './ethereum/interfaces/graph.ts': {
+                documents: resolve(__dirname, 'ethereum', 'documents.graphql'),
+                schema: resolve(__dirname, 'ethereum', 'schema.graphql'),
                 config: {
                     scalars: {
                         BigInt: 'string',
@@ -26,4 +26,4 @@ export const typescript = async () => {
     await execa('npx', ['tsc', '--build'], { cwd: __dirname, stdio: 'inherit' })
 }
 
-export const build = series(codegen, typescript)
+export const prepublish = series(codegen, typescript)

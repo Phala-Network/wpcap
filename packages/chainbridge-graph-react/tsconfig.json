@@ -3,9 +3,9 @@
     "compilerOptions": {
         "declaration": true,
         "jsx": "preserve",
-        "outDir": "./dist",
-        "rootDir": "./src"
+        "outDir": "./lib",
+        "rootDir": "."
     },
     "exclude": ["dist/**/*"],
-    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx"]
+    "include": ["ethereum/**/*.ts", "substrate/**/*.ts"]
 }

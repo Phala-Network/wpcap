@@ -1,5 +1,5 @@
 {
-    "name": "@phala/chainbridge-ethereum-graph",
+    "name": "@phala/chainbridge-graph-react",
     "version": "0.0.1",
     "dependencies": {
         "graphql": "^15.5.1",
@@ -12,13 +12,15 @@
         "@graphql-codegen/typescript": "^1.23.0",
         "@graphql-codegen/typescript-graphql-request": "^3.2.5",
         "@graphql-codegen/typescript-operations": "^1.18.4",
-        "esm": "^3.2.25",
         "execa": "^5.1.1",
-        "gulp": "^4.0.2"
+        "gulp": "^4.0.2",
+        "ts-node": "^10.1.0"
     },
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
     "scripts": {
-        "build": "gulp build"
+        "codegen": "gulp codegen",
+        "build": "gulp typescript",
+        "prepublish": "gulp prepublish"
     }
 }
