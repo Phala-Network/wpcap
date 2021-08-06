@@ -1,10 +1,17 @@
 import { FormControl, FormHelperText, FormLabel, Select } from '@chakra-ui/react'
 import { useAccountDecimalBalance } from '@phala/ethereum-erc20-react'
 import { useEthersAccounts } from '@phala/util-ethereum-react'
+import { isAddress } from 'ethers/lib/utils'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useConfiguration } from '../../libs/configuration/context'
 
-export const AccountSelect = ({ onChange }: { onChange?: (account?: string) => void }): JSX.Element => {
+export const AccountSelect = ({
+    disabled,
+    onChange,
+}: {
+    disabled?: boolean
+    onChange?: (account?: string) => void
+}): JSX.Element => {
     const config = useConfiguration()
 
     const accounts = useEthersAccounts()
@@ -47,7 +54,8 @@ export const AccountSelect = ({ onChange }: { onChange?: (account?: string) => v
 
     const selectRef = useRef<HTMLSelectElement>(null)
     useEffect(() => {
-        setAccount(selectRef.current?.value)
+        const value = selectRef.current?.value ?? ''
+        setAccount(isAddress(value) ? value : undefined)
     }, [account])
 
     useEffect(() => onChange?.(account), [account, onChange])
@@ -58,6 +66,7 @@ export const AccountSelect = ({ onChange }: { onChange?: (account?: string) => v
                 <FormLabel>Ethereum account</FormLabel>
                 <Select
                     defaultValue=""
+                    disabled={disabled}
                     onChange={(e) => {
                         setAccount(e.target.value)
                     }}

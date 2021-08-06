@@ -1,17 +1,26 @@
 import { InfoIcon } from '@chakra-ui/icons'
 import {
-    Spinner, Table,
+    Alert,
+    AlertDescription,
+    AlertIcon,
+    AlertTitle,
+    Spinner,
+    Stack,
+    Table,
     Tbody,
-    Td, Th,
+    Td,
+    Th,
     Thead,
     Tooltip,
     Tr
 } from '@chakra-ui/react'
-import { useDepositRecordsByDepositorQuery } from '@phala/chainbridge-ethereum-graph'
-import { useErc20Decimals } from '@phala/ethereum-erc20-react'
-import { Decimal } from 'decimal.js'
+import { useDepositRecordsByDepositorQuery } from '@phala/chainbridge-graph-react/lib/ethereum/queries'
+import { useDecimalMultiplier } from '@phala/polkadot-react/lib/queries/useTokenDecimalsQuery'
+import { balanceToDecimal } from '@phala/polkadot-react/lib/utils/balances/convert'
+import { hexToU8a } from '@polkadot/util'
+import { encodeAddress } from '@polkadot/util-crypto'
+import BN from 'bn.js'
 import React, { useMemo } from 'react'
-import { useConfiguration } from '../../../libs/configuration/context'
 import { useEthereumGraphQL } from './GraphQLClientContext'
 
 interface DepositRecord {
@@ -25,25 +34,33 @@ interface DepositRecord {
 export const DepositRecordItem = ({ record }: { record: DepositRecord }): JSX.Element => {
     const { amount, destinationRecipient, nonce, transaction } = record
 
-    const { ethereum } = useConfiguration()
-    const { factor } = useErc20Decimals(ethereum?.contracts.erc20)
+    const { multiplier } = useDecimalMultiplier()
 
     const convertedAmount = useMemo(
         // TODO: this balance is already converted into Substrate decimals
-        () => factor && new Decimal(amount).div(factor).toString() + ' PHA',
-        [amount, factor]
+        () => multiplier !== undefined && balanceToDecimal(new BN(amount), multiplier).toString(),
+        [amount, multiplier]
     )
+
+    const encodedRecipient = useMemo(() => {
+        const u8a = hexToU8a(destinationRecipient)
+        try {
+            return encodeAddress(u8a)
+        } catch {
+            return 'invalid address'
+        }
+    }, [destinationRecipient])
 
     return (
         <Tr>
             <Td>
                 {transaction} #{nonce}{' '}
             </Td>
-            <Td>{convertedAmount || <Spinner />}</Td>
+            <Td>{(convertedAmount && `${convertedAmount} PHA`) || <Spinner />}</Td>
             <Td>
                 <Tooltip label={destinationRecipient}>
                     <i>
-                        undecodable <InfoIcon />
+                        {encodedRecipient} <InfoIcon />
                     </i>
                 </Tooltip>
             </Td>
@@ -56,7 +73,7 @@ export const DepositRecordItem = ({ record }: { record: DepositRecord }): JSX.El
 
 export const DepositRecordTable = ({ depositor }: { depositor?: string }): JSX.Element => {
     const { client } = useEthereumGraphQL()
-    const { data } = useDepositRecordsByDepositorQuery(depositor, 10, 0, client)
+    const { data, error } = useDepositRecordsByDepositorQuery(depositor, 10, 0, client)
 
     const rows = useMemo(
         () => data?.depositRecords.map((record) => <DepositRecordItem key={record.nonce} record={record} />),
@@ -64,14 +81,25 @@ export const DepositRecordTable = ({ depositor }: { depositor?: string }): JSX.E
     )
 
     return (
-        <Table>
-            <Thead>
-                <Th>Hash</Th>
-                <Th>Recipient</Th>
-                <Th>Amount</Th>
-                <Th>Status</Th>
-            </Thead>
-            <Tbody>{rows}</Tbody>
-        </Table>
+        <Stack>
+            {error && (
+                <Alert status="error">
+                    <AlertIcon />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{(error as Error)?.message ?? JSON.stringify(error)}</AlertDescription>
+                </Alert>
+            )}
+            <Table variant="simple">
+                <Thead>
+                    <Tr>
+                        <Th>Hash</Th>
+                        <Th>Recipient</Th>
+                        <Th>Amount</Th>
+                        <Th>Status</Th>
+                    </Tr>
+                </Thead>
+                <Tbody>{rows}</Tbody>
+            </Table>
+        </Stack>
     )
 }
