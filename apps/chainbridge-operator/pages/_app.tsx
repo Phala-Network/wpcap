@@ -6,6 +6,7 @@ import type { AppProps } from 'next/app'
 import React, { useMemo } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { EthereumGraphQLProvider } from '../components/chainbridge/ethereum/GraphQLClientContext'
+import { SubstrateGraphQLProvider } from '../components/chainbridge/substrate/GraphQLClientContext'
 import { ConfigurationProvider, useConfiguration } from '../libs/configuration/context'
 
 const ConfiguredApp = ({ Component, pageProps }: AppProps) => {
@@ -17,11 +18,13 @@ const ConfiguredApp = ({ Component, pageProps }: AppProps) => {
 
     return (
         <EthereumGraphQLProvider endpoint={config.ethereum?.chainBridge.graph.endpoint}>
-            <ApiPromiseProvider
-                options={{ endpoint: config.substrate?.endpoint, registryTypes: config.substrate?.typedefs }}
-            >
-                <Component {...pageProps} />
-            </ApiPromiseProvider>
+            <SubstrateGraphQLProvider endpoint={config.substrate?.chainBridge.graph.endpoint}>
+                <ApiPromiseProvider
+                    options={{ endpoint: config.substrate?.endpoint, registryTypes: config.substrate?.typedefs }}
+                >
+                    <Component {...pageProps} />
+                </ApiPromiseProvider>
+            </SubstrateGraphQLProvider>
         </EthereumGraphQLProvider>
     )
 }

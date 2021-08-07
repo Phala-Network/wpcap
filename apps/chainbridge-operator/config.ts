@@ -6,6 +6,7 @@ export const config: Configuration = {
         1: {
             // mainnet
             chainBridge: {
+                chainId: 0,
                 contracts: {
                     bridge: '0xC84456ecA286194A201F844993C220150Cf22C63',
                     erc20AssetHandler: '0x6eD3bc069Cf4F87DE05c04C352E8356492EC6eFE',
@@ -27,6 +28,18 @@ export const config: Configuration = {
     },
     substrate: {
         'khala-pc-test': {
+            chainBridge: {
+                chainId: 1,
+                graph: {
+                    endpoint: 'https://phala-pc-test-2-subql.maho.science/',
+                },
+                peerChains: {
+                    1: {
+                        // ethereum mainnet
+                        chainId: 0,
+                    },
+                },
+            },
             endpoint: 'wss://pc-test-2.phala.network/khala/ws',
             typedefs: khalaDev,
         },

@@ -1,6 +1,8 @@
 import { RegistryTypes } from '@polkadot/types/types'
 
 interface EthereumChainBridgeConfiguration {
+    chainId: number
+
     contracts: {
         bridge: string
         erc20AssetHandler: string
@@ -27,8 +29,26 @@ export interface EthereumNetworkConfiguration {
     }
 }
 
+interface SubstrateChainBridgeConfiguration {
+    chainId: number
+
+    graph: {
+        endpoint: string
+    }
+
+    peerChains: Record<
+        number | string,
+        {
+            chainId: number
+        }
+    >
+}
+
 export interface SubstrateNetworkConfiguration {
+    chainBridge: SubstrateChainBridgeConfiguration
+
     endpoint: string
+
     typedefs: RegistryTypes
 }
 
