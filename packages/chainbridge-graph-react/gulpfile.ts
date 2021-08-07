@@ -18,6 +18,17 @@ export const codegen = async () => {
                 },
                 plugins: ['typescript', 'typescript-operations', 'typescript-graphql-request'],
             },
+            './substrate/interfaces/graph.ts': {
+                documents: resolve(__dirname, 'substrate', 'documents.graphql'),
+                schema: resolve(__dirname, 'substrate', 'schema.graphql'),
+                config: {
+                    scalars: {
+                        BigFloat: 'string',
+                    },
+                    strictScalars: true,
+                },
+                plugins: ['typescript', 'typescript-operations', 'typescript-graphql-request'],
+            },
         },
     })
 }

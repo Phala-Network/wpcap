@@ -1,0 +1,12 @@
+query proposalSucceedEventByDepositNonce($originChainId: Int!, $depositNonce: BigFloat!) {
+    proposalSucceededEvents(
+        filter: { and: [{ depositNonce: { equalTo: $depositNonce }, originChainId: { equalTo: $originChainId } }] }
+    ) {
+        nodes {
+            blockHeight
+            depositNonce
+            executedAt
+            originChainId
+        }
+    }
+}

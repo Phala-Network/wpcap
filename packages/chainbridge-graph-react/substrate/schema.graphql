@@ -1,0 +1,37 @@
+scalar BigFloat
+
+type Query implements Node {
+    nodeId: ID!
+
+    proposalSucceededEvents(filter: ProposalSucceededEventFilter): ProposalSucceededEventsConnection
+}
+
+interface Node {
+    nodeId: ID!
+}
+
+input BigFloatFilter {
+    equalTo: BigFloat
+}
+
+input IntFilter {
+    equalTo: Int
+}
+
+type ProposalSucceededEvent implements Node {
+    nodeId: ID!
+    blockHeight: BigFloat!
+    depositNonce: BigFloat!
+    executedAt: String!
+    originChainId: Int!
+}
+
+type ProposalSucceededEventsConnection {
+    nodes: [ProposalSucceededEvent]!
+}
+
+input ProposalSucceededEventFilter {
+    and: [ProposalSucceededEventFilter!]
+    depositNonce: BigFloatFilter
+    originChainId: IntFilter
+}
