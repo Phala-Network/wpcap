@@ -1,9 +1,9 @@
+import { resolve } from 'path'
 import { generate } from '@graphql-codegen/cli'
 import execa from 'execa'
 import { series } from 'gulp'
-import { resolve } from 'path'
 
-export const codegen = async () => {
+export const codegen = async (): Promise<void> => {
     await generate({
         generates: {
             './ethereum/interfaces/graph.ts': {
@@ -33,7 +33,7 @@ export const codegen = async () => {
     })
 }
 
-export const typescript = async () => {
+export const typescript = async (): Promise<void> => {
     await execa('npx', ['tsc', '--build'], { cwd: __dirname, stdio: 'inherit' })
 }
 

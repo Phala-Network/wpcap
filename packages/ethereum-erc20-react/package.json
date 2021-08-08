@@ -23,6 +23,7 @@
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
     "scripts": {
-        "build": "gulp build"
+        "build": "gulp typescript",
+        "prepublish": "gulp prepublish"
     }
 }

@@ -1,9 +1,9 @@
+import { series, src, dest } from 'gulp'
 import { resolve } from 'path'
-import execa from 'execa'
-import { dest, series, src } from 'gulp'
 import { glob, runTypeChain } from 'typechain'
+import execa from 'execa'
 
-export const typechain = async () => {
+export const typechain = async (): Promise<void> => {
     const cwd = __dirname
     const filesToProcess = glob(cwd, ['abis/*.json'])
     await runTypeChain({
@@ -15,9 +15,9 @@ export const typechain = async () => {
     })
 }
 
-export const typescript = async () => {
+export const typescript = async (): Promise<void> => {
     await execa('npx', ['tsc', '--build'], { cwd: __dirname, stdio: 'inherit' })
-    return src(resolve('./src/interfaces/**/*.d.ts')).pipe(dest('./dist/interfaces'))
+    src(resolve('./src/interfaces/**/*.d.ts')).pipe(dest('./dist/interfaces'))
 }
 
-export const build = series(typechain, typescript)
+export const prepublish = series(typechain, typescript)
