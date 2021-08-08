@@ -1,2 +1,4 @@
 .next
+libs/polkadot/interfaces/*
+!libs/polkadot/interfaces/definitions.ts
 node_modules

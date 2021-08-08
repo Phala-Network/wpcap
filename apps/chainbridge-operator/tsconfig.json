@@ -3,21 +3,16 @@
     "compilerOptions": {
         "allowJs": true,
         "jsx": "preserve",
-        "lib": [
-            "dom",
-            "dom.iterable",
-            "esnext"
-        ],
+        "lib": ["dom", "dom.iterable", "esnext"],
         "noEmit": true,
+        "paths": {
+            "@phala/types": ["./libs/polkadot/interfaces/types.ts"],
+            "@polkadot/api/augment": ["./libs/polkadot/interfaces/augment-api.ts"],
+            "@polkadot/types/augment": ["./libs/polkadot/interfaces/augment-api.ts"]
+        },
         "preserveSymlinks": true,
+        "strict": true
     },
-    "exclude": [
-        "node_modules"
-    ],
-    "include": [
-        "config.js",
-        "next-env.d.ts",
-        "**/*.ts",
-        "**/*.tsx"
-    ]
+    "exclude": ["node_modules"],
+    "include": ["config.ts", "next-env.d.ts", "libs/polkadot/augment.d.ts", "**/*.ts", "**/*.tsx"]
 }
