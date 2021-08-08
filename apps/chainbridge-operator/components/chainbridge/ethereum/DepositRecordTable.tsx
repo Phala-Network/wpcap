@@ -12,15 +12,19 @@ import {
     Th,
     Thead,
     Tooltip,
-    Tr
+    Tr,
 } from '@chakra-ui/react'
 import { useDepositRecordsByDepositorQuery } from '@phala/chainbridge-graph-react/lib/ethereum/queries'
+import { useProposalSucceededEventByDepositNonceQuery } from '@phala/chainbridge-graph-react/lib/substrate/queries'
 import { useDecimalMultiplier } from '@phala/polkadot-react/lib/queries/useTokenDecimalsQuery'
 import { balanceToDecimal } from '@phala/polkadot-react/lib/utils/balances/convert'
 import { hexToU8a } from '@polkadot/util'
 import { encodeAddress } from '@polkadot/util-crypto'
 import BN from 'bn.js'
 import React, { useMemo } from 'react'
+import { useBridgeProposalQuery } from '../../../libs/chainbridge/phala/useBridgeProposalQuery'
+import { useConfiguration } from '../../../libs/configuration/context'
+import { useSubstrateGraphQL } from '../substrate/GraphQLClientContext'
 import { useEthereumGraphQL } from './GraphQLClientContext'
 
 interface DepositRecord {
@@ -28,11 +32,34 @@ interface DepositRecord {
     destinationChainId: number
     destinationRecipient: string
     nonce: string
+    resourceId: string
     transaction: string
 }
 
 export const DepositRecordItem = ({ record }: { record: DepositRecord }): JSX.Element => {
-    const { amount, destinationRecipient, nonce, transaction } = record
+    const { ethereum } = useConfiguration()
+
+    const { amount, destinationRecipient, nonce, resourceId, transaction } = record
+
+    const { client } = useSubstrateGraphQL()
+    const { data: event } = useProposalSucceededEventByDepositNonceQuery(ethereum?.chainBridge.chainId, nonce, client)
+
+    const parsedNonce = parseInt(nonce)
+    const recipient = useMemo(() => {
+        try {
+            return encodeAddress(hexToU8a(destinationRecipient))
+        } catch {
+            return undefined
+        }
+    }, [destinationRecipient])
+
+    const { data: proposal } = useBridgeProposalQuery({
+        amount: new BN(amount),
+        depositNonce: parsedNonce,
+        originChainId: ethereum?.chainBridge.chainId,
+        recipient,
+        resourceId,
+    })
 
     const { multiplier } = useDecimalMultiplier()
 
@@ -42,15 +69,6 @@ export const DepositRecordItem = ({ record }: { record: DepositRecord }): JSX.El
         [amount, multiplier]
     )
 
-    const encodedRecipient = useMemo(() => {
-        const u8a = hexToU8a(destinationRecipient)
-        try {
-            return encodeAddress(u8a)
-        } catch {
-            return 'invalid address'
-        }
-    }, [destinationRecipient])
-
     return (
         <Tr>
             <Td>
@@ -58,14 +76,16 @@ export const DepositRecordItem = ({ record }: { record: DepositRecord }): JSX.El
             </Td>
             <Td>{(convertedAmount && `${convertedAmount} PHA`) || <Spinner />}</Td>
             <Td>
-                <Tooltip label={destinationRecipient}>
+                <Tooltip hasArrow label={destinationRecipient ?? 'currently unavailable'}>
                     <i>
-                        {encodedRecipient} <InfoIcon />
+                        {recipient ?? 'unavailable'} <InfoIcon />
                     </i>
                 </Tooltip>
             </Td>
             <Td>
-                <i>unavailable</i>
+                <Tooltip hasArrow label={event?.executedAt ?? 'currently unavailable'}>
+                    <i>{proposal?.unwrapOr(undefined)?.status.toHuman() ?? 'Pending'}</i>
+                </Tooltip>
             </Td>
         </Tr>
     )
@@ -93,8 +113,8 @@ export const DepositRecordTable = ({ depositor }: { depositor?: string }): JSX.E
                 <Thead>
                     <Tr>
                         <Th>Hash</Th>
-                        <Th>Recipient</Th>
                         <Th>Amount</Th>
+                        <Th>Recipient</Th>
                         <Th>Status</Th>
                     </Tr>
                 </Thead>
