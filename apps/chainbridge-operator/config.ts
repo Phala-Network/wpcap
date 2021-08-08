@@ -13,7 +13,8 @@ export const config: Configuration = {
                     erc20ResourceId: '0x00000000000000000000000000000063a7e2be78898ba83824b0c0cc8dfb6001',
                 },
                 graph: {
-                    endpoint: 'https://phala-chainbridge-graph.maho.science/subgraphs/name/chainbridge',
+                    endpoint:
+                        'https://chainbridge-ethereum-graph-testing.phala.works/subgraphs/name/chainbridge',
                 },
                 peerChains: {
                     'khala-pc-test-2': {
@@ -31,7 +32,7 @@ export const config: Configuration = {
             chainBridge: {
                 chainId: 1,
                 graph: {
-                    endpoint: 'https://phala-pc-test-2-subql.maho.science/',
+                    endpoint: 'https://chainbridge-substrate-graph-testing.phala.works/',
                 },
                 peerChains: {
                     1: {
