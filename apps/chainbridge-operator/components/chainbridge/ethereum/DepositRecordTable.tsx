@@ -15,7 +15,7 @@ import {
     Tr,
 } from '@chakra-ui/react'
 import { useDepositRecordsByDepositorQuery } from '@phala/chainbridge-graph-react/lib/ethereum/queries'
-import { useProposalSucceededEventByDepositNonceQuery } from '@phala/chainbridge-graph-react/lib/substrate/queries'
+import { useProposalEventsByDepositNonceQuery } from '@phala/chainbridge-graph-react/lib/substrate/queries'
 import { useDecimalMultiplier } from '@phala/polkadot-react/lib/queries/useTokenDecimalsQuery'
 import { balanceToDecimal } from '@phala/polkadot-react/lib/utils/balances/convert'
 import { hexToU8a } from '@polkadot/util'
@@ -42,7 +42,7 @@ export const DepositRecordItem = ({ record }: { record: DepositRecord }): JSX.El
     const { amount, destinationRecipient, nonce, resourceId, transaction } = record
 
     const { client } = useSubstrateGraphQL()
-    const { data: event } = useProposalSucceededEventByDepositNonceQuery(ethereum?.chainBridge.chainId, nonce, client)
+    const { data: events } = useProposalEventsByDepositNonceQuery(ethereum?.chainBridge.chainId, nonce, client)
 
     const parsedNonce = parseInt(nonce)
     const recipient = useMemo(() => {
@@ -60,6 +60,28 @@ export const DepositRecordItem = ({ record }: { record: DepositRecord }): JSX.El
         recipient,
         resourceId,
     })
+
+    const proposalStatus = useMemo(() => {
+        const hash = events?.approval?.approvalExtrinsic
+
+        if (events?.execution !== undefined) {
+            return (
+                <Tooltip hasArrow label={hash ?? 'hash is currently unavailable'}>
+                    <i>Executed</i>
+                </Tooltip>
+            )
+        }
+
+        if (events?.approval !== undefined || proposal?.unwrapOr(undefined)?.status?.isApproved === true) {
+            return (
+                <Tooltip hasArrow label={hash ?? 'hash is currently unavailable'}>
+                    <i>Approved</i>
+                </Tooltip>
+            )
+        }
+
+        return <i>Pending</i>
+    }, [events, proposal])
 
     const { multiplier } = useDecimalMultiplier()
 
@@ -82,11 +104,7 @@ export const DepositRecordItem = ({ record }: { record: DepositRecord }): JSX.El
                     </i>
                 </Tooltip>
             </Td>
-            <Td>
-                <Tooltip hasArrow label={event?.executedAt ?? 'currently unavailable'}>
-                    <i>{proposal?.unwrapOr(undefined)?.status.toHuman() ?? 'Pending'}</i>
-                </Tooltip>
-            </Td>
+            <Td>{proposalStatus}</Td>
         </Tr>
     )
 }

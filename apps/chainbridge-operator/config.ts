@@ -13,8 +13,7 @@ export const config: Configuration = {
                     erc20ResourceId: '0x00000000000000000000000000000063a7e2be78898ba83824b0c0cc8dfb6001',
                 },
                 graph: {
-                    endpoint:
-                        'https://chainbridge-ethereum-graph-testing.phala.works/subgraphs/name/chainbridge',
+                    endpoint: 'https://chainbridge-ethereum-graph-testing.phala.works/subgraphs/name/chainbridge',
                 },
                 peerChains: {
                     'khala-pc-test-2': {
