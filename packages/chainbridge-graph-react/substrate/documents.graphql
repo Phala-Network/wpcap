@@ -1,12 +1,23 @@
-query proposalSucceedEventByDepositNonce($originChainId: Int!, $depositNonce: BigFloat!) {
-    proposalSucceededEvents(
+query getChainBridgeProposalEventsByDepositNonce($originChainId: Int!, $depositNonce: BigFloat!) {
+    chainBridgeProposalApprovals(
         filter: { and: [{ depositNonce: { equalTo: $depositNonce }, originChainId: { equalTo: $originChainId } }] }
     ) {
         nodes {
-            blockHeight
             depositNonce
-            executedAt
             originChainId
+            approvalBlockHeight
+            approvalExtrinsic
+            signer
+        }
+    }
+
+    chainBridgeProposalExecutions(
+        filter: { and: [{ depositNonce: { equalTo: $depositNonce }, originChainId: { equalTo: $originChainId } }] }
+    ) {
+        nodes {
+            depositNonce
+            originChainId
+            signer
         }
     }
 }

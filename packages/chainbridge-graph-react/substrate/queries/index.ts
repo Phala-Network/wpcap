@@ -1,1 +1,1 @@
-export * from './useProposalSucceededEventByDepositNonceQuery'
+export * from './useProposalEventsByDepositNonceQuery'
